@@ -4,7 +4,7 @@ import Integration.integration.entity.Member;
 import Integration.integration.exception.CustomException;
 import Integration.integration.dto.request.LoginRequest;
 import Integration.integration.dto.request.RegisterRequest;
-import Integration.integration.repository.UserRepository;
+import Integration.integration.repository.memberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
-    private final UserRepository userRepository;
+public class memberService {
+    private final memberRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public void register(RegisterRequest request) {
@@ -21,19 +21,19 @@ public class UserService {
             throw new CustomException("EMAIL_EXISTS", "이미 사용 중인 이메일입니다.", HttpStatus.CONFLICT);
         }
 
-        Member user = new Member();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setNickname(request.getNickname());
+        Member member = new Member();
+        member.setEmail(request.getEmail());
+        member.setPassword(passwordEncoder.encode(request.getPassword()));
+        member.setNickname(request.getNickname());
 
-        userRepository.save(user);
+        userRepository.save(member);
     }
 
     public String login(LoginRequest request) {
-        Member user = userRepository.findByEmail(request.getEmail())
+        Member member = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomException("USER_NOT_FOUND", "이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new CustomException("INVALID_PASSWORD", "비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
 
@@ -49,7 +49,7 @@ public class UserService {
     }
 
     public void sendResetPassword(String email) {
-        Member user = userRepository.findByEmail(email)
+        Member member = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException("EMAIL_NOT_FOUND", "이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
         // 임시 비밀번호 생성 or 이메일 전송 로직

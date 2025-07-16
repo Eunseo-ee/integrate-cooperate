@@ -3,7 +3,7 @@ package Integration.integration.controller;
 import Integration.integration.dto.request.LoginRequest;
 import Integration.integration.dto.request.RegisterRequest;
 import Integration.integration.dto.response.ApiResponse;
-import Integration.integration.service.UserService;
+import Integration.integration.service.memberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/member")
 @RequiredArgsConstructor
-public class UserController {
+public class memberController {
 
-    private final UserService userService;
+    private final memberService userService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> register(@RequestBody @Valid RegisterRequest request) {
