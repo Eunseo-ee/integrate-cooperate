@@ -3,20 +3,24 @@ package Integration.integration.controller;
 import Integration.integration.dto.request.LoginRequest;
 import Integration.integration.dto.request.RegisterRequest;
 import Integration.integration.dto.response.ApiResponse;
-import Integration.integration.service.memberService;
+import Integration.integration.jwt.JwtTokenProvider;
+import Integration.integration.service.UsersService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class memberController {
+public class UsersController {
 
-    private final memberService userService;
+    private final UsersService userService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> register(@RequestBody @Valid RegisterRequest request) {
@@ -25,7 +29,7 @@ public class memberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<?>> login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequest request) {
         String token = userService.login(request);
         return ResponseEntity.ok(ApiResponse.success(Map.of("accessToken", token)));
     }

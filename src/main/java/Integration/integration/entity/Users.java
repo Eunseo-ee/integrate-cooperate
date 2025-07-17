@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 @Getter
 @Setter
 @Entity
-public class Member {
+public class Users {
     @Id
     @GeneratedValue
     private Long id;
