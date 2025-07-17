@@ -19,30 +19,32 @@ import java.util.Map;
 public class UsersController {
 
     private final UsersService userService;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
 
+    // 회원가입
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> register(@RequestBody @Valid RegisterRequest request) {
         userService.register(request);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
+    // 로그인
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequest request) {
         String token = userService.login(request);
         return ResponseEntity.ok(ApiResponse.success(Map.of("accessToken", token)));
     }
 
+    // 이메일 찾기
     @GetMapping("/find-email")
     public ResponseEntity<ApiResponse<?>> findEmail(@RequestParam String nickname) {
         String email = userService.findEmailByNickname(nickname);
         return ResponseEntity.ok(ApiResponse.success(Map.of("email", email)));
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<?>> resetPassword(@RequestParam String email) {
-        userService.sendResetPassword(email);
-        return ResponseEntity.ok(ApiResponse.success("비밀번호 재설정 메일이 전송되었습니다."));
+    // 인증코드 전송
+    @PostMapping("/send-code")
+    public ResponseEntity<ApiResponse<?>> sendCode(@RequestBody Map<String, String> request) {
+        userService.sendVerificationCode(request.get("email"));
+        return ResponseEntity.ok(ApiResponse.success("메일로 인증코드가 전송되었습니다."));
     }
 }

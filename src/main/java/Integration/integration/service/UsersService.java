@@ -7,9 +7,13 @@ import Integration.integration.dto.request.RegisterRequest;
 import Integration.integration.jwt.JwtTokenProvider;
 import Integration.integration.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +21,8 @@ public class UsersService {
     private final UsersRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final MailService mailService;
 
     public void register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -52,11 +58,14 @@ public class UsersService {
                 .orElseThrow(() -> new CustomException("EMAIL_NOT_FOUND", "해당 닉네임의 이메일이 없습니다.", HttpStatus.NOT_FOUND));
     }
 
-    public void sendResetPassword(String email) {
+    // 인증코드 메일로 전송
+    public void sendVerificationCode(String email) {
         Users users = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException("EMAIL_NOT_FOUND", "이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
-        // 임시 비밀번호 생성 or 이메일 전송 로직
-        System.out.println("비밀번호 초기화 메일 전송됨");
+        String code = String.format("%06d", new Random().nextInt(1000000)); // 6자리 코드
+        redisTemplate.opsForValue().set("pwd:verify:" + email, code, Duration.ofMinutes(10));
+
+        mailService.sendVerificationCodeEmail(email, code);
     }
 }
