@@ -19,5 +19,7 @@ public class Users {
     private String email;
 
     private String password;
+
+    @Column(unique = true, nullable = false)
     private String nickname;
 }

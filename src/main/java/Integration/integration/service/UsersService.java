@@ -45,11 +45,10 @@ public class UsersService {
         return token;
     }
 
+    // 닉네임으로 이메일 찾기
     public String findEmailByNickname(String nickname) {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getNickname().equals(nickname))
+        return userRepository.findByNickname(nickname)
                 .map(Users::getEmail)
-                .findFirst()
                 .orElseThrow(() -> new CustomException("EMAIL_NOT_FOUND", "해당 닉네임의 이메일이 없습니다.", HttpStatus.NOT_FOUND));
     }
 
